@@ -52,11 +52,11 @@ class PublicUserApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_password_too_short_error(self):
-        """Test an error is returned if password less than 5 char."""
+        """Test an error is returned if password less than 5 chars."""
         payload = {
             'email': 'test@example.com',
             'password': 'pw',
-            'name': 'Test Name',
+            'name': 'Test name',
         }
         res = self.client.post(CREATE_USER_URL, payload)
 
@@ -98,13 +98,13 @@ class PublicUserApiTests(TestCase):
         """Test error returned if user not found for given email."""
         payload = {'email': 'test@example.com', 'password': 'pass123'}
         res = self.client.post(TOKEN_URL, payload)
-        
+
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_token_blank_password(self):
         """Test posting a blank password returns an error."""
-        payload = {'email': 'test@example', 'password': ''}
+        payload = {'email': 'test@example.com', 'password': ''}
         res = self.client.post(TOKEN_URL, payload)
 
         self.assertNotIn('token', res.data)
@@ -133,7 +133,7 @@ class PrivateUserApiTests(TestCase):
         """Test retrieving profile for logged in user."""
         res = self.client.get(ME_URL)
 
-        self.assertEqual(res.status_code,status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, {
             'name': self.user.name,
             'email': self.user.email,
@@ -141,7 +141,7 @@ class PrivateUserApiTests(TestCase):
 
     def test_post_me_not_allowed(self):
         """Test POST is not allowed for the me endpoint."""
-        res = res.client.post(ME_URL, {})
+        res = self.client.post(ME_URL, {})
 
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
