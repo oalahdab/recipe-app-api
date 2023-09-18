@@ -1,5 +1,5 @@
 """
-Views for the recipe APIs.
+Views for the recipe APIs
 """
 from rest_framework import (
     viewsets,
@@ -30,7 +30,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Return the serializer class for request."""
         if self.action == 'list':
             return serializers.RecipeSerializer
-        
+
         return self.serializer_class
 
     def perform_create(self, serializer):
@@ -42,13 +42,12 @@ class TagViewSet(mixins.DestroyModelMixin,
                 mixins.UpdateModelMixin,
                  mixins.ListModelMixin,
                  viewsets.GenericViewSet):
-    """Manaage tags in the database."""
+    """Manage tags in the database."""
     serializer_class = serializers.TagSerializer
     queryset = Tag.objects.all()
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """Filter querset to authenticated user."""
+        """Filter queryset to authenticated user."""
         return self.queryset.filter(user=self.request.user).order_by('-name')
-        
