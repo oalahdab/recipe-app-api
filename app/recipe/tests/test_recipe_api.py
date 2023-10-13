@@ -84,7 +84,7 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_recipe_list_limited_to_user(self):
-        """Test list of recipes is limited to authenticate user."""
+        """Test list of recipes is limited to authenticated user."""
         other_user = create_user(email='other@example.com', password='test123')
         create_recipe(user=other_user)
         create_recipe(user=self.user)
@@ -323,7 +323,7 @@ class PrivateRecipeApiTests(TestCase):
         recipe = recipes[0]
         self.assertEqual(recipe.ingredients.count(), 2)
         self.assertIn(ingredient, recipe.ingredients.all())
-        for ingredient in payload['ingredient']:
+        for ingredient in payload['ingredients']:
             exists = recipe.ingredients.filter(
                 name=ingredient['name'],
                 user=self.user,
