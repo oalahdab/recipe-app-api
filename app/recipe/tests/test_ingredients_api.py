@@ -13,7 +13,7 @@ from core.models import Ingredient
 from recipe.serializers import IngredientSerializer
 
 
-INGREDIENT_URL = reverse('recipe:ingredient-list')
+INGREDIENTS_URL = reverse('recipe:ingredient-list')
 
 
 def detail_url(ingredient_id):
@@ -27,20 +27,20 @@ def create_user(email='user@example.com', password='testpass123'):
 
 
 class PublicIngredientsApiTests(TestCase):
-    """Test inauthenticated API requests."""
+    """Test unauthenticated API requests."""
 
     def setUp(self):
         self.client = APIClient()
 
     def test_auth_required(self):
         """Test auth is required for retrieving ingredients."""
-        res = self.client.get(INGREDIENT_URL)
+        res = self.client.get(INGREDIENTS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivetIngredientApiTests(TestCase):
-    """Test unauthenticated API requests."""
+class PrivateIngredientsApiTests(TestCase):
+    """Test authenticated API requests."""
 
     def setUp(self):
         self.user = create_user()
@@ -52,10 +52,10 @@ class PrivetIngredientApiTests(TestCase):
         Ingredient.objects.create(user=self.user, name='Kale')
         Ingredient.objects.create(user=self.user, name='Vanilla')
 
-        res = self.client.get(INGREDIENT_URL)
+        res = self.client.get(INGREDIENTS_URL)
 
-        Ingredients = Ingredient.objects.all().order_by('-name')
-        serializer = IngredientSerializer(Ingredients, many=True)
+        ingredients = Ingredient.objects.all().order_by('-name')
+        serializer = IngredientSerializer(ingredients, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
@@ -65,7 +65,7 @@ class PrivetIngredientApiTests(TestCase):
         Ingredient.objects.create(user=user2, name='Salt')
         ingredient = Ingredient.objects.create(user=self.user, name='Pepper')
 
-        res = self.client.get(INGREDIENT_URL)
+        res = self.client.get(INGREDIENTS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
@@ -83,7 +83,7 @@ class PrivetIngredientApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         ingredient.refresh_from_db()
         self.assertEqual(ingredient.name, payload['name'])
-    
+
     def test_delete_ingredient(self):
         """Test deleting an ingredient."""
         ingredient = Ingredient.objects.create(user=self.user, name='Lettuce')
@@ -92,5 +92,5 @@ class PrivetIngredientApiTests(TestCase):
         res = self.client.delete(url)
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-        ingredient = Ingredient.objects.filter(user=self.user)
-        self.assertFalse(ingredient.exists())
+        ingredients = Ingredient.objects.filter(user=self.user)
+        self.assertFalse(ingredients.exists())
