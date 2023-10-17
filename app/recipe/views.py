@@ -7,6 +7,7 @@ from drf_spectacular.utils import (
     OpenApiParameter,
     OpenApiTypes,
 )
+
 from rest_framework import (
     viewsets,
     mixins,
@@ -32,7 +33,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def _params_to_ints(self,qs):
+    def _params_to_ints(self, qs):
         """Convert a list of strings to integers."""
         return [int(str_id) for str_id in qs.split(',')]
 
@@ -49,7 +50,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(ingredients__id__in=ingredient_ids)
 
         return queryset.filter(
-            user=self.user,
+            user=self.request.user,
         ).order_by('-id').distinct()
 
     def get_serializer_class(self):
